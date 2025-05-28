@@ -88,6 +88,24 @@ app.put("/chats/:id", asyncWrap(async(req, res) => {
   res.redirect("/chats");
 }));
 
+// used for partial updates
+app.patch("/chats/:id", asyncWrap(async (req, res) => {
+  const { id } = req.params;
+  const { msg } = req.body;
+
+  const updatedChat = await Chat.findByIdAndUpdate(
+    id,
+    { msg }, // only updating 'msg'
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedChat) {
+    throw new ExpressError("Chat not found", 404);
+  }
+
+  res.redirect(`/chats/${id}/edit`);
+}));
+
 // Destry Route
 app.delete("/chats/:id",asyncWrap(async (req,res)=>{
   let {id} = req.params;
